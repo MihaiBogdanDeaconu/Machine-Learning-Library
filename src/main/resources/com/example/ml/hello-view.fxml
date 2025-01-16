@@ -1,16 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<?import javafx.scene.control.Button?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.ml.HelloController">
-  <padding>
-    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-  </padding>
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.ml.gui.controllers.MLController">
+  <top>
+    <HBox spacing="10" padding="10">
+      <Button text="Choose Input File" onAction="#handleChooseFile"/>
+      <TextField fx:id="filePathField" editable="false" HBox.hgrow="ALWAYS"/>
+    </HBox>
+  </top>
+  <center>
+    <GridPane padding="10" hgap="10" vgap="10">
+      <!-- Classifier Selection -->
+      <Label text="Select Classifier:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+      <ComboBox fx:id="classifierComboBox" GridPane.rowIndex="0" GridPane.columnIndex="1">
+        <items>
+          <FXCollections fx:factory="observableArrayList">
+            <String fx:value="Perceptron"/>
+            <String fx:value="Logistic Regression"/>
+            <String fx:value="Decision Tree"/>
+          </FXCollections>
+        </items>
+      </ComboBox>
 
-  <Label fx:id="welcomeText"/>
-  <Button text="Hello!" onAction="#onHelloButtonClick"/>
-</VBox>
+      <!-- Hyperparameter Configuration -->
+      <VBox spacing="5" GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.columnSpan="2">
+        <Label text="Hyperparameters:"/>
+        <GridPane fx:id="hyperparameterGrid" hgap="10" vgap="10">
+          <!-- Dynamic hyperparameter fields will be added here -->
+        </GridPane>
+      </VBox>
+
+      <!-- Train-Test Split -->
+      <Label text="Train Percentage:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+      <HBox spacing="10" GridPane.rowIndex="2" GridPane.columnIndex="1">
+        <Slider fx:id="trainSplitSlider" min="50" max="90" value="70" majorTickUnit="10" minorTickCount="5" showTickLabels="true" showTickMarks="true"/>
+        <TextField fx:id="trainSplitField" prefWidth="50" text="70"/>
+      </HBox>
+
+      <!-- Train Button -->
+      <Button text="Train Classifier" onAction="#handleTrain" GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.columnSpan="2" maxWidth="Infinity"/>
+    </GridPane>
+  </center>
+  <bottom>
+    <VBox spacing="10" padding="10">
+      <Label text="Results:"/>
+      <TextArea fx:id="resultsArea" prefHeight="200" editable="false"/>
+      <Label text="Confusion Matrix:"/>
+      <TableView fx:id="confusionMatrixTable" prefHeight="200"/>
+      <Label fx:id="statusLabel" text="Status: Ready"/>
+    </VBox>
+  </bottom>
+</BorderPane>

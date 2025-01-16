@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.ml.ui.MainController">
+    <top>
+        <HBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="Machine Learning Framework" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+    <center>
+        <GridPane hgap="10" vgap="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <!-- File Selection -->
+            <Label text="Input CSV File:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="filePathField" GridPane.rowIndex="0" GridPane.columnIndex="1" editable="false"/>
+            <Button text="Browse" onAction="#handleBrowse" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+
+            <!-- Classifier Selection -->
+            <Label text="Classifier:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <ComboBox fx:id="classifierComboBox" onAction="#handleClassifierSelection" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.columnSpan="2"/>
+
+            <!-- Hyperparameters (Dynamic) -->
+            <VBox fx:id="hyperparametersBox" spacing="10" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="3"/>
+
+            <!-- Train-Test Split -->
+            <Label text="Train-Test Split (%%):" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <HBox spacing="10" GridPane.rowIndex="3" GridPane.columnIndex="1" GridPane.columnSpan="2">
+                <Label text="Train:"/>
+                <TextField fx:id="trainSplitField" promptText="70" prefWidth="50"/>
+                <Label text="%%"/>
+                <Label text="Test:"/>
+                <TextField fx:id="testSplitField" promptText="30" prefWidth="50"/>
+                <Label text="%%"/>
+            </HBox>
+
+            <!-- Train Button -->
+            <Button text="Train Classifier" onAction="#handleTrain" GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="3" maxWidth="Infinity"/>
+        </GridPane>
+    </center>
+    <bottom>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="Evaluation Metrics:" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            <GridPane hgap="10" vgap="10">
+                <Label text="Accuracy:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <Label fx:id="accuracyLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                <Label text="Precision:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <Label fx:id="precisionLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                <Label text="Recall:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <Label fx:id="recallLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                <Label text="F1 Score:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <Label fx:id="f1ScoreLabel" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            </GridPane>
+        </VBox>
+    </bottom>
+</BorderPane>
