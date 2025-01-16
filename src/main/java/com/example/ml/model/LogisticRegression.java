@@ -1,15 +1,17 @@
 package com.example.ml.model;
 
 import com.example.ml.data.Instance;
-
 import com.example.ml.evaluation.*;
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class LogisticRegression<F extends Number, L extends Number> implements Model<F, L>{
+public class LogisticRegression<F extends Number, L extends Number> implements Model<F, L>, Serializable {
+    private static final long serialVersionUID = 1L;
+
     double[] weights;
     double[] checkpointWeights;
     double bias;
@@ -38,6 +40,7 @@ public class LogisticRegression<F extends Number, L extends Number> implements M
         return 1.0 / (1 + Math.exp(-z));
     }
 
+    @Override
     public void train(List<Instance<F, L>> trainSet, List<Instance<F, L>> validationSet) {
         List<Double> validationAccuracies = new ArrayList<>();
         List<Double> losses = new ArrayList<>();
@@ -74,32 +77,14 @@ public class LogisticRegression<F extends Number, L extends Number> implements M
             losses.add(computeLoss(validationSet));
             System.out.println("Loss: " + computeLoss(validationSet));
         }
-        plot(validationAccuracies, "Validation Accuraies over epochs", "ValidationAccuracy");
+        plot(validationAccuracies, "Validation Accuracies over epochs", "ValidationAccuracy");
         plot(losses, "Loss over epochs", "Loss");
     }
 
-    public double computeLoss(List<Instance<F, L>> dataset) {
-        double totalLoss = 0.0;
-        int m = dataset.size();
-
-        for(Instance<F, L> instance : dataset) {
-            double prediction = predict(instance);
-            double y = instance.getLabel().doubleValue();
-            double epsilon = 1e-15;
-
-            prediction = Math.max(epsilon, prediction);
-
-            totalLoss += y * Math.log(prediction) + (1 - y) * Math.log(1 - prediction);
-        }
-
-        return - totalLoss / m ;
-    }
-
+    @Override
     public EvaluationMetrics test(List<Instance<F, L>> testSet){
         // Use best checkpoint
-        for(int i = 0; i < checkpointWeights.length; i++){
-            weights[i] = checkpointWeights[i];
-        }
+        System.arraycopy(checkpointWeights, 0, weights, 0, checkpointWeights.length);
         bias = checkpointBias;
 
         List<L> testPredictions = getPredictions(testSet);
@@ -116,6 +101,23 @@ public class LogisticRegression<F extends Number, L extends Number> implements M
         return new EvaluationMetrics(testAccuracy, testPrecision, testRecall, testF1Score);
     }
 
+    public double computeLoss(List<Instance<F, L>> dataset) {
+        double totalLoss = 0.0;
+        int m = dataset.size();
+
+        for(Instance<F, L> instance : dataset) {
+            double prediction = predict(instance);
+            double y = instance.getLabel().doubleValue();
+            double epsilon = 1e-15;
+
+            prediction = Math.max(epsilon, prediction);
+            prediction = Math.min(1 - epsilon, prediction);
+
+            totalLoss += y * Math.log(prediction) + (1 - y) * Math.log(1 - prediction);
+        }
+
+        return - totalLoss / m ;
+    }
 
     public void validate(List<Instance<F, L>> validationSet, List<Double> validationAccuracies, int epoch) {
         List<L> valPredictions = getPredictions(validationSet);
@@ -123,9 +125,7 @@ public class LogisticRegression<F extends Number, L extends Number> implements M
         double valAccuracy = accuracy.evaluate(validationSet, valPredictions);
         if(valAccuracy > bestAccuracy){
             bestAccuracy = valAccuracy;
-            for(int i = 0; i < checkpointWeights.length; i++){
-                checkpointWeights[i] = weights[i];
-            }
+            System.arraycopy(weights, 0, checkpointWeights, 0, weights.length);
             checkpointBias = bias;
         }
         validationAccuracies.add(valAccuracy);
@@ -133,13 +133,13 @@ public class LogisticRegression<F extends Number, L extends Number> implements M
     }
 
     public List<L> getPredictions(List<Instance<F, L>> dataSet){
-        List<L> predictions = new ArrayList<>();
-        for (Instance<F, L> instance : dataSet) {
-            double prediction = predict(instance);
+        List<L> preds = new ArrayList<>();
+        for (Instance<F, L> inst : dataSet) {
+            double prediction = predict(inst);
             int predLabel = (prediction >= 0.5) ? 1 : 0;
-            predictions.add((L)(Integer.valueOf(predLabel)));
+            preds.add((L)(Integer.valueOf(predLabel)));
         }
-        return predictions;
+        return preds;
     }
 
     public double predict(Instance<F, L> instance) {

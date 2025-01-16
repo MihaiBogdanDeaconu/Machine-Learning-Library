@@ -38,18 +38,24 @@
             <VBox fx:id="hyperparametersBox" spacing="10" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="3"/>
 
             <!-- Train-Test Split -->
-            <Label text="Train-Test Split (%%):" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <Label text="Train-Test Split (\%):" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
             <HBox spacing="10" GridPane.rowIndex="3" GridPane.columnIndex="1" GridPane.columnSpan="2">
                 <Label text="Train:"/>
                 <TextField fx:id="trainSplitField" promptText="70" prefWidth="50"/>
-                <Label text="%%"/>
+                <Label text="\%"/>
                 <Label text="Test:"/>
                 <TextField fx:id="testSplitField" promptText="30" prefWidth="50"/>
-                <Label text="%%"/>
+                <Label text="\%"/>
             </HBox>
 
             <!-- Train Button -->
             <Button text="Train Classifier" onAction="#handleTrain" GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="3" maxWidth="Infinity"/>
+
+            <!-- Save and Load Buttons -->
+            <HBox spacing="10" GridPane.rowIndex="5" GridPane.columnIndex="0" GridPane.columnSpan="3">
+                <Button text="Save Model" onAction="#handleSaveModel" />
+                <Button text="Load Model" onAction="#handleLoadModel" />
+            </HBox>
         </GridPane>
     </center>
     <bottom>

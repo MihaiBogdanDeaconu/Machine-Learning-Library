@@ -1,19 +1,17 @@
 package com.example.ml.model;
 
 import com.example.ml.data.Instance;
-
 import com.example.ml.evaluation.*;
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.SQLOutput;
+import java.io.Serializable;
 import java.util.*;
 
-public class Perceptron<F extends Number, L extends Number> implements Model<F, L>{
+public class Perceptron<F extends Number, L extends Number> implements Model<F, L>, Serializable {
+    private static final long serialVersionUID = 1L;
+
     double[] weights;
     double[] checkpointWeights;
     double bias;
@@ -38,6 +36,7 @@ public class Perceptron<F extends Number, L extends Number> implements Model<F, 
         this.bestAccuracy = 0.0;
     }
 
+    @Override
     public void train(List<Instance<F, L>> trainSet, List<Instance<F, L>> validationSet) {
         List<Double> validationAccuracies = new ArrayList<>();
 
@@ -61,12 +60,6 @@ public class Perceptron<F extends Number, L extends Number> implements Model<F, 
                     biasUpdate += learningRate * error;
                 }
 
-//                int batchCount = end - i;
-//                for (int w = 0; w < weights.length; w++) {
-//                    weightsUpdate[w] /= batchCount;
-//                }
-//                biasUpdate /= batchCount;
-
                 updateWeights(weightsUpdate, biasUpdate);
             }
             validate(validationSet, validationAccuracies, epoch);
@@ -74,11 +67,10 @@ public class Perceptron<F extends Number, L extends Number> implements Model<F, 
         plotValidationAccuracies(validationAccuracies);
     }
 
+    @Override
     public EvaluationMetrics test(List<Instance<F, L>> testSet){
         // Use best checkpoint
-        for(int i = 0; i < checkpointWeights.length; i++){
-            weights[i] = checkpointWeights[i];
-        }
+        System.arraycopy(checkpointWeights, 0, weights, 0, checkpointWeights.length);
         bias = checkpointBias;
 
         List<L> testPredictions = getPredictions(testSet);
@@ -101,9 +93,7 @@ public class Perceptron<F extends Number, L extends Number> implements Model<F, 
         double valAccuracy = accuracy.evaluate(validationSet, valPredictions);
         if(valAccuracy > bestAccuracy){
             bestAccuracy = valAccuracy;
-            for(int i = 0; i < checkpointWeights.length; i++){
-                checkpointWeights[i] = weights[i];
-            }
+            System.arraycopy(weights, 0, checkpointWeights, 0, weights.length);
             checkpointBias = bias;
         }
         validationAccuracies.add(valAccuracy);

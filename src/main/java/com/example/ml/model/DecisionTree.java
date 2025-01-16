@@ -6,11 +6,13 @@ import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class DecisionTree<F extends Number, L extends Number> implements Model<F, L> {
+public class DecisionTree<F extends Number, L extends Number> implements Model<F, L>, Serializable {
+    private static final long serialVersionUID = 1L;
 
     private TreeNode root;
     private int maxDepth;
@@ -200,14 +202,6 @@ public class DecisionTree<F extends Number, L extends Number> implements Model<F
         System.out.println("F1 Score: " + String.format("%.4f", f1));
     }
 
-    private List<L> convertPredictions(List<Integer> preds) {
-        List<L> result = new ArrayList<>();
-        for (Integer p : preds) {
-            result.add((L) p);
-        }
-        return result;
-    }
-
     private static class BestSplit {
         int featureIndex;
         double threshold;
@@ -242,5 +236,28 @@ public class DecisionTree<F extends Number, L extends Number> implements Model<F
         chart.addSeries("F1 Score", iterations, f1Scores);
 
         new SwingWrapper<>(chart).displayChart();
+    }
+
+    // Define TreeNode as a static nested class
+    private static class TreeNode implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        boolean isLeaf;
+        int predictedLabel;
+
+        int splitFeatureIndex;
+        double splitThreshold;
+
+        TreeNode leftChild;
+        TreeNode rightChild;
+
+        public TreeNode() {
+            this.isLeaf = false;
+            this.predictedLabel = 0;
+            this.splitFeatureIndex = -1;
+            this.splitThreshold = 0.0;
+            this.leftChild = null;
+            this.rightChild = null;
+        }
     }
 }
